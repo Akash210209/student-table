@@ -11,7 +11,7 @@ function App() {
     { path: '/edit-student/:id', element: <EditStudent /> },
   ]);
 
-  return <>{routes}</>; // Render routes
+  return <>{routes}</>;
 }
 
 export default App;

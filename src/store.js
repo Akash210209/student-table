@@ -3,7 +3,7 @@ import studentReducer from './reducers/studentReducer'; // Path to your studentR
 
 const store = configureStore({
   reducer: {
-    student: studentReducer,  // This ensures `state.student` holds the student slice
+    student: studentReducer, 
   },
 });
 

@@ -1,30 +1,47 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { addStudent } from '../reducers/studentReducer'; // Redux action
+import { addStudent } from '../reducers/studentReducer';
 import { Button, Form, Row, Col, Card } from 'react-bootstrap';
 
 function AddStudent() {
-  const [name, setName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [rollNo, setRollNo] = useState('');
-  const [age, setAge] = useState('');
+  const [formData, setFormData] = useState({
+    name: '',
+    lastName: '',
+    rollNo: '',
+    age: '',
+  });
+  const [errors, setErrors] = useState({});
   
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  const validateForm = () => {
+    const newErrors = {};
+    if (!formData.name.trim()) newErrors.name = 'Name cannot be empty';
+    if (!formData.lastName.trim()) newErrors.lastName = 'Last Name cannot be empty';
+    if (!String(formData.rollNo).trim()) newErrors.rollNo = 'Roll No cannot be empty';
+    if (!String(formData.age).trim()) newErrors.age = 'Age cannot be empty';
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+    setErrors({ ...errors, [name]: '' }); 
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    
-    // Dispatch action to add student
-    dispatch(addStudent({ name, lastName, rollNo, age }));
-
-    // Redirect to homepage
-    navigate('/');
+    if (validateForm()) {
+      dispatch(addStudent(formData)); 
+      navigate('/'); 
+    }
   };
 
   const handleGoBack = () => {
-    navigate('/');  // Navigate back to homepage
+    navigate('/'); 
   };
 
   return (
@@ -33,70 +50,75 @@ function AddStudent() {
         <h2 className="mb-4 text-center text-primary">Add New Student</h2>
 
         <Form onSubmit={handleSubmit}>
-          {/* Name and Last Name */}
+          {/* Name  field here*/}
           <Row className="mb-3">
             <Col xs={12} md={3} className="d-flex align-items-center">
               <Form.Label>Name:</Form.Label>
             </Col>
             <Col xs={12} md={9}>
-              <Form.Control 
-                type="text" 
-                value={name} 
-                onChange={(e) => setName(e.target.value)} 
-                placeholder="Enter Name" 
-                required
-                className="border-radius-10"
+              <Form.Control
+                type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                placeholder="Enter Name"
+                className={`border-radius-10 ${errors.name ? 'is-invalid' : ''}`}
               />
+              {errors.name && <Form.Text className="text-danger">{errors.name}</Form.Text>}
             </Col>
           </Row>
 
+          {/* Last Name  field here*/}
           <Row className="mb-3">
             <Col xs={12} md={3} className="d-flex align-items-center">
               <Form.Label>Last Name:</Form.Label>
             </Col>
             <Col xs={12} md={9}>
-              <Form.Control 
-                type="text" 
-                value={lastName} 
-                onChange={(e) => setLastName(e.target.value)} 
-                placeholder="Enter Last Name" 
-                required
-                className="border-radius-10"
+              <Form.Control
+                type="text"
+                name="lastName"
+                value={formData.lastName}
+                onChange={handleChange}
+                placeholder="Enter Last Name"
+                className={`border-radius-10 ${errors.lastName ? 'is-invalid' : ''}`}
               />
+              {errors.lastName && <Form.Text className="text-danger">{errors.lastName}</Form.Text>}
             </Col>
           </Row>
 
-          {/* Roll Number */}
+          {/* Roll Number  field here*/}
           <Row className="mb-3">
             <Col xs={12} md={3} className="d-flex align-items-center">
               <Form.Label>Roll No:</Form.Label>
             </Col>
             <Col xs={12} md={9}>
-              <Form.Control 
-                type="text" 
-                value={rollNo} 
-                onChange={(e) => setRollNo(e.target.value)} 
-                placeholder="Enter Roll No" 
-                required
-                className="border-radius-10"
+              <Form.Control
+                type="text"
+                name="rollNo"
+                value={formData.rollNo}
+                onChange={handleChange}
+                placeholder="Enter Roll No"
+                className={`border-radius-10 ${errors.rollNo ? 'is-invalid' : ''}`}
               />
+              {errors.rollNo && <Form.Text className="text-danger">{errors.rollNo}</Form.Text>}
             </Col>
           </Row>
 
-          {/* Age */}
+          {/* Age field here */}
           <Row className="mb-3">
             <Col xs={12} md={3} className="d-flex align-items-center">
               <Form.Label>Age:</Form.Label>
             </Col>
             <Col xs={12} md={9}>
-              <Form.Control 
-                type="number" 
-                value={age} 
-                onChange={(e) => setAge(e.target.value)} 
-                placeholder="Enter Age" 
-                required
-                className="border-radius-10"
+              <Form.Control
+                type="number"
+                name="age"
+                value={formData.age}
+                onChange={handleChange}
+                placeholder="Enter Age"
+                className={`border-radius-10 ${errors.age ? 'is-invalid' : ''}`}
               />
+              {errors.age && <Form.Text className="text-danger">{errors.age}</Form.Text>}
             </Col>
           </Row>
 
@@ -106,7 +128,7 @@ function AddStudent() {
           </Button>
         </Form>
 
-        {/* Go Back Button */}
+        {/* Go Back Button  to redirect my page to homepage if i dont want to edit or add student */}
         <Button variant="secondary" onClick={handleGoBack} className="mt-3 w-100">
           Go Back to Home
         </Button>

@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams, useNavigate } from 'react-router-dom';
-import { updateStudent } from '../reducers/studentReducer';  // Ensure the correct path
+import { updateStudent } from '../reducers/studentReducer'; 
 import { Button, Form, Row, Col, Card } from 'react-bootstrap';
 
 const EditStudentPage = () => {
-  const { id } = useParams();  // Extract student id from the URL
-  const students = useSelector((state) => state.student.students);  // Get students from Redux state
-  const student = students.find((student) => student.id === String(id));  // Find student by ID
+  const { id } = useParams(); 
+  const students = useSelector((state) => state.student.students); 
+  const student = students.find((student) => student.id === String(id)); 
 
   const [formData, setFormData] = useState({
     name: '',
@@ -16,39 +16,47 @@ const EditStudentPage = () => {
     age: '',
   });
 
+  const [errors, setErrors] = useState({}); 
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  // Log the student and id to debug
-  useEffect(() => {
-    console.log('URL ID:', id);  // Log the ID from URL
-    console.log('Found Student:', student);  // Log the student object
-  }, [id, student]);
-
-  // Pre-populate the form with the student data
   useEffect(() => {
     if (student) {
-      setFormData({ ...student });  // Set the form data to the student's current details
+      setFormData({ ...student }); 
     }
   }, [student]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
+    setErrors({ ...errors, [name]: '' }); 
   };
-
+  // validation block here where im checking if values are valid and are not epmty conditions
+  const validateForm = () => {
+    const newErrors = {};
+    if (!formData.name.trim()) newErrors.name = 'Name cannot be empty';
+    if (!formData.lastName.trim()) newErrors.lastName = 'Last Name cannot be empty';
+    if (!String(formData.rollNo).trim()) newErrors.rollNo = 'Roll No cannot be empty';
+    if (!String(formData.age).trim()) newErrors.age = 'Age cannot be empty';
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0; 
+  };
+  
   const handleSubmit = (e) => {
     e.preventDefault();
-    dispatch(updateStudent(formData));  // Dispatch the action to update student
-    navigate('/');  // Redirect to homepage after updating
+    if (validateForm()) {
+      dispatch(updateStudent(formData)); 
+      navigate('/'); 
+    }
   };
 
   const handleGoBack = () => {
-    navigate('/');  // Navigate back to homepage
+    navigate('/'); 
   };
 
   if (!student) {
-    return <div>Student not found. Redirecting...</div>;  // If student not found, show error
+    return <div>Student not found. Redirecting...</div>; 
   }
 
   return (
@@ -57,9 +65,9 @@ const EditStudentPage = () => {
         <h3 className="mb-4 text-center text-primary">Edit Student</h3>
 
         <Form onSubmit={handleSubmit}>
-          {/* Name */}
+          {/* Name field here */}
           <Row className="mb-3">
-            <Col xs={12} md={1} className="d-flex align-items-center">
+            <Col xs={12} md={3} className="d-flex align-items-center">
               <Form.Label>Name:</Form.Label>
             </Col>
             <Col xs={12} md={9}>
@@ -69,15 +77,15 @@ const EditStudentPage = () => {
                 value={formData.name}
                 onChange={handleChange}
                 placeholder="Enter Name"
-                required
-                className="border-radius-10"
+                isInvalid={!!errors.name} // Add invalid class if there's an error
               />
+              <Form.Control.Feedback type="invalid">{errors.name}</Form.Control.Feedback>
             </Col>
           </Row>
 
-          {/* Last Name */}
+          {/* Last Name field here*/}
           <Row className="mb-3">
-            <Col xs={12} md={1} className="d-flex align-items-center">
+            <Col xs={12} md={3} className="d-flex align-items-center">
               <Form.Label>Last Name:</Form.Label>
             </Col>
             <Col xs={12} md={9}>
@@ -87,15 +95,15 @@ const EditStudentPage = () => {
                 value={formData.lastName}
                 onChange={handleChange}
                 placeholder="Enter Last Name"
-                required
-                className="border-radius-10"
+                isInvalid={!!errors.lastName}
               />
+              <Form.Control.Feedback type="invalid">{errors.lastName}</Form.Control.Feedback>
             </Col>
           </Row>
 
-          {/* Roll No */}
+          {/* Roll No field here */}
           <Row className="mb-3">
-            <Col xs={12} md={1} className="d-flex align-items-center">
+            <Col xs={12} md={3} className="d-flex align-items-center">
               <Form.Label>Roll No:</Form.Label>
             </Col>
             <Col xs={12} md={9}>
@@ -105,15 +113,15 @@ const EditStudentPage = () => {
                 value={formData.rollNo}
                 onChange={handleChange}
                 placeholder="Enter Roll No"
-                required
-                className="border-radius-10"
+                isInvalid={!!errors.rollNo}
               />
+              <Form.Control.Feedback type="invalid">{errors.rollNo}</Form.Control.Feedback>
             </Col>
           </Row>
 
-          {/* Age */}
+          {/* Age  field here*/}
           <Row className="mb-3">
-            <Col xs={12} md={1} className="d-flex align-items-center">
+            <Col xs={12} md={3} className="d-flex align-items-center">
               <Form.Label>Age:</Form.Label>
             </Col>
             <Col xs={12} md={9}>
@@ -123,9 +131,9 @@ const EditStudentPage = () => {
                 value={formData.age}
                 onChange={handleChange}
                 placeholder="Enter Age"
-                required
-                className="border-radius-10"
+                isInvalid={!!errors.age}
               />
+              <Form.Control.Feedback type="invalid">{errors.age}</Form.Control.Feedback>
             </Col>
           </Row>
 
@@ -135,7 +143,7 @@ const EditStudentPage = () => {
           </Button>
         </Form>
 
-        {/* Go Back Button */}
+               {/* Go Back Button  to redirect my page to homepage if i dont want to edit or add student */}
         <Button variant="secondary" onClick={handleGoBack} className="mt-3 w-100">
           Go Back to Home
         </Button>

@@ -1,35 +1,38 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from "@reduxjs/toolkit";
 
-// Initial state
-const initialState = {
-  students: [
-    { id: '1', name: 'John', lastName: 'Doe', rollNo: 101, age: 20 },  // Ensure id is a string
-    { id: '2', name: 'Jane', lastName: 'Smith', rollNo: 102, age: 22 },  // Ensure id is a string
+
+const studentReducer = createSlice({
+  name: "students",
+  initialState: {
+     students: [
+    { id: '1', name: 'student', lastName: '1', rollNo: 101, age: 20 },  
+    { id: '2', name: 'student', lastName: '2', rollNo: 102, age: 22 },  
   ],
-};
-
-  
-
-// Student slice
-const studentSlice = createSlice({
-  name: 'students',
-  initialState,
+    loading: false,
+    error: null,
+  },
   reducers: {
-    addStudent: (state, action) => {
-      state.students.push({
-        id: new Date().getTime().toString(), // Unique ID
-        ...action.payload,
-      });
+    addStudent(state, action) {
+      state.students.push(action.payload);
     },
-    updateStudent: (state, action) => {
-      const { id, name, lastName, rollNo, age } = action.payload;
-      const index = state.students.findIndex((student) => student.id === id);
+    updateStudent(state, action) {
+      const index = state.students.findIndex(
+        (student) => student.id === action.payload.id
+      );
       if (index !== -1) {
-        state.students[index] = { id, name, lastName, rollNo, age };
+        state.students[index] = { ...state.students[index], ...action.payload };
       }
+    },
+    deleteStudent(state, action) {
+      state.students = state.students.filter(
+        (student) => student.id !== action.payload
+      );
     },
   },
 });
 
-export const { addStudent, updateStudent } = studentSlice.actions;
-export default studentSlice.reducer;
+const { actions } = studentReducer;
+
+export const { addStudent, updateStudent, deleteStudent } = actions;
+
+export default studentReducer.reducer;
